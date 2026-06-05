@@ -68,15 +68,21 @@ def lambda_handler(event, context):
 
 The following visual artifacts document the setup stages, code baseline, execution evaluations, and platform auditing outputs.
 
+---
+
 ### S3 Baseline Infrastructure
-![S3 Misconfiguration 1](./unencrypted-bucket1.png)
-![S3 Misconfiguration 2](./unencrypted-bucket.2.png)
-![Active Buckets Catalog](./unencrypted-buckets.png)
+![S3 Misconfiguration 1](screenshots/unencrypted-buckets.png)
+![S3 Misconfiguration 2](screenshots/unencrypted-bucket1.png)
+![Active Buckets Catalog](screenshots/unencrypted-bucket.2.png)
+
+---
 
 ### Lambda Configuration
-![Target Lambda Source Logic](./lamda-code.png)
-![Successful Audit Output](./After-Lamda-unencrypted-s3-buckets.png)
+![Target Lambda Source Logic](screenshots/lamda-code.png)
+![Successful Audit Output](screenshots/After-Lamda-unencrypted-s3-buckets.png)
+
+---
 
 ### CloudWatch Telemetry
-![CloudWatch System Traces](./cloudwatch-logs.png)
-![CloudWatch Metrics Dashboard](./cloudwatch-metrics.png)
+![CloudWatch System Traces](screenshots/cloudwatch-logs.png)
+![CloudWatch Metrics Dashboard](screenshots/cloudwatch-metrics.png)

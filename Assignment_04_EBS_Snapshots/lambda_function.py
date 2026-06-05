@@ -2,6 +2,7 @@ import boto3
 from datetime import datetime, timezone
 
 RETENTION_DAYS = 30
+EXCLUSION_TAG_KEY = 'DoNotDelete'  # Tag key to look for to skip deletion
 
 def lambda_handler(event, context):
     ec2 = boto3.client('ec2')
@@ -28,12 +29,20 @@ def lambda_handler(event, context):
     for vol in volumes:
         vol_id = vol['VolumeId']
         detach_time_str = None
+        skip_volume = False
         
-        # Check if the volume already has our tracking timestamp tag
+        # Check tags for both the tracking timestamp and the exclusion rule
         for tag in vol.get('Tags', []):
+            if tag['Key'] == EXCLUSION_TAG_KEY:
+                if tag['Value'].strip().lower() in ['true', 'yes', '1']:
+                    skip_volume = True
             if tag['Key'] == 'DetachedAt':
                 detach_time_str = tag['Value']
-                break
+                
+        # Safeguard Check: Skip completely if the exclusion tag is present
+        if skip_volume:
+            print(f"SKIPPING: Volume {vol_id} is protected by '{EXCLUSION_TAG_KEY}' tag.")
+            continue
                 
         # Case A: First time seeing this unattached volume -> Tag it with current time
         if not detach_time_str:
@@ -53,7 +62,7 @@ def lambda_handler(event, context):
         
         print(f"Volume {vol_id} has been unattached for {idle_time.days} days.")
         
-        # Check if it has crossed the 30-day deletion threshold
+        # Check if it has crossed the retention threshold
         if idle_time.days >= RETENTION_DAYS:
             print(f"MATCHED CRITERIA: Volume {vol_id} has been idle for >= {RETENTION_DAYS} days. Purging...")
             
